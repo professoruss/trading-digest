@@ -1,6 +1,6 @@
 input {
   file {
-    path => "${etradelogpath}"
+    path => "${ETRADELOGPATH}"
     start_position => "beginning"
   }
 }
@@ -56,16 +56,19 @@ filter {
 output {
   if [status] == "Completed" {
     exec {
-      command => "ssh ${sshhost} "echo %{date} %{order_type} %{ticker} %{count}@%{actual_price} %{status} >> ${htmlpath}/%{+YYYY}/%{+MM}/%{+YYYY}%{+MM}%{+dd}-trades.txt"'
+      command => 'ssh ${SSHHOST} "echo %{date} %{order_type} %{ticker} %{count}@%{actual_price} %{status} >> ${HTMLPATH}/%{+YYYY}/%{+MM}/%{+YYYY}%{+MM}%{+dd}-trades.txt"'
     }
     exec {
-      command => 'curl -X POST -H "Content-Type: application/json" -d "{\"content\": \"%{date} %{order_type} %{ticker} %{count}@%{actual_price} %{status}\"}" ${discordurl1}'
+      command => 'curl -X POST -H "Content-Type: application/json" -d "{\"content\": \"| %{date} | %{order_type} | %{ticker} | %{count}@%{actual_price} | %{status} |\"}" ${DISCORDURL1}'
+    }
+    exec {
+      command => 'curl -X POST -H "Content-Type: application/json" -d "{\"text\": \"| %{date} | %{order_type} | %{ticker} | %{count}@%{actual_price} | %{status} |\"}" ${SLACKURL1}'
     }
     stdout { codec => rubydebug }
   }
   if [event_type] == "AccountBalanceResponse" {
     exec {
-      command => "echo today_pl=%{today_pl} > ${localbasepath}/tmp/todaypl.txt"
+      command => "echo today_pl=%{today_pl} > ${PWD}/tmp/todaypl.txt"
     }
     stdout { codec => rubydebug }
   }

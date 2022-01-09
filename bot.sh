@@ -1,5 +1,6 @@
 #!/bin/sh
-. botvars
+export $(xargs < ./botvars)
+env
 # Set Session Name
 SESSION="stonks"
 SESSIONEXISTS=$(tmux list-sessions | grep $SESSION)
@@ -12,7 +13,7 @@ then
 
     # Name first Pane and start logstash
     tmux rename-window -t 0 'logstash'
-    tmux send-keys -t 'logstash' 'logstash -f ./logstash/orders.yaml' C-m # Switch to bind script?
+    tmux send-keys -t 'logstash' 'export $(xargs < ./botvars); env; logstash -f ./logstash/orders.yaml' C-m # Switch to bind script?
 
     # Create and setup pane for daily p/l
     tmux new-window -t $SESSION:1 -n 'todaypl'

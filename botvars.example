@@ -1,6 +1,5 @@
-localbasepath=$(dirname "$0")
-etradelogpath="~/data/logs/client-log.txt"
-sshhost="<hostname to ssh data to>"
-htmlpath="<html path for data on remote host>"
-discordurl1="<url for discord updates>"
-slackurl1="<url for slack updates>"
+ETRADELOGPATH="/Users/<username>/data/logs/client-log.txt" # change <username to your local user>
+SSHHOST="<hostname to ssh data to>"
+HTMLPATH="<html path for data on remote host>"
+DISCORDURL1="<url for discord updates>"
+SLACKURL1="<url for slack updates>"

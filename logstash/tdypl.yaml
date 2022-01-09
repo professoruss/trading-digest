@@ -1,10 +1,10 @@
 input {
   file {
-    path => "${etradelogpath}"
+    path => "${ETRADELOGPATH}"
     start_position => "beginning"
   }
   file {
-    path => "${localbasepath}/tmp/todaypl.txt"
+    path => "${PWD}/tmp/todaypl.txt"
     start_position => "beginning"
     tags => [ 'todaypl' ]
   }
@@ -44,7 +44,7 @@ filter {
 }
 output {
   if [event_type] == "AccountBalanceResponse" {
-    exec { command => "echo old_today_pl=%{today_pl} >> ${localbasepath}/todaypl.txt" }
+    exec { command => "echo old_today_pl=%{today_pl} >> ${PWD}/tmp/todaypl.txt" }
     stdout { codec => rubydebug }
   }
 }

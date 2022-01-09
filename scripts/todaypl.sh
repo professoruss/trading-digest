@@ -1,18 +1,20 @@
 #!/bin/sh
-. ../botvars
-  echo 'last_pl=0.0' > ../tmp/lastpl.txt
-  echo 'today_pl=0.0' > ../tmp/todaypl.txt
+source botvars
+  echo 'last_pl=0.0' > ./tmp/lastpl.txt
+  echo 'today_pl=0.0' > ./tmp/todaypl.txt
   while true; do
-    . ../tmp/lastpl.txt
-    . ../tmp/todaypl.txt
+    . ./tmp/lastpl.txt
+    . ./tmp/todaypl.txt
     if [ $today_pl != $last_pl ]
     then
       echo need to update.. today $today_pl last $last_pl
-      scp ../tmp/todaypl.txt ${sshhost}:${htmlpath}/$(date +%Y)/$(date +%m)/$(date +%Y%m%d)-pl.txt
+      scp ./tmp/todaypl.txt ${SSHHOST}:${HTMLPATH}/$(date +%Y)/$(date +%m)/$(date +%Y%m%d)-pl.txt
       echo ssh $?
-      curl -X POST -H "Content-Type: application/json" -d "{\"content\": \"realized p/l:\$${today_pl}\"}" ${discordurl1}
+      curl -X POST -H "Content-Type: application/json" -d "{\"content\": \"realized p/l:\$${today_pl}\"}" ${DISCORDURL1}
       echo discord $?
-      echo "last_pl=${today_pl}" > ../tmp/lastpl.txt
+      curl -X POST -H "Content-Type: application/json" -d "{\"text\": \"realized p/l:\$${today_pl}\"}" ${SLACKURL1}
+      echo slack $?
+      echo "last_pl=${today_pl}" > ./tmp/lastpl.txt
     fi
     sleep 60
   done
