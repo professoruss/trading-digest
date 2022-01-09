@@ -16,4 +16,5 @@ The purpose of this is to parse my ETrade Pro logs live throughout the trading d
 * **tmux** - logstash and p/l scripts run in their own panes within the stonks session
 * **ssh keys** - needed to automatically update pl/trade text files on remote host (maybe move locally so user can decide if they want to push to remote host?)
 * **curl** - for updating discord/slack
+* **logstash** - for log parsing, currently using 7.14.0
 * **Etrade Pro** - for trading, it seems as if other pro platforms have some sort of logging similar to this, maybe develop other logstash configs to support them in the future
