@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="refresh" content="60">
+    <title>Russ Daily Trade Digest</title>
+    <style type="text/css">
+      p.main {
+        font-family: verdana,arial,sans-serif;
+        font-size:11px;
+      }
+      table.gridtable {
+        font-family: verdana,arial,sans-serif;
+        font-size:11px;
+        color:#333333;
+        border-width: 1px;
+        border-color: #666666;
+        border-collapse: collapse;
+      }
+      table.gridtable th {
+        border-width: 1px;
+        padding: 8px;
+        border-style: solid;
+        border-color: #666666;
+        background-color: #dedede;
+      }
+      table.gridtable td {
+        border-width: 1px;
+        padding: 8px;
+        border-style: solid;
+        border-color: #666666;
+        background-color: #ffffff;
+      }
+    </style>
+    <script>
+      var d = new Date();
+      var yyyy = d.getFullYear();//Get the year as a four digit number (yyyy)
+      var mm = String(d.getMonth() + 1).padStart(2, '0');//Get the month as a number (01-12) - Jan is 0!
+      var dd = String(d.getDate()).padStart(2, '0');//Get the day as a number and pad(01-31)
+      var dayOfWeek = d.getDay();
+      var isWeekend = (dayOfWeek === 6) || (dayOfWeek  === 0); // 6 = Saturday, 0 = Sunday
+
+      totalTrades = 0;
+      totalProfit = 0;
+
+      function getTrades(yr, mo, day){
+        fetch("/trades/" + yr + "/" + mo + "/" + day + "trades.txt")
+          .then((response) => {
+              return response.text();
+              })
+          .then((text) => {
+            var lines = text.split('\n');
+            linesLengthAdj = String(lines.length - 1)
+            for(var line = 0; line < linesLengthAdj; line++){
+              var tradeTable = document.getElementById('tTable');
+              var row = tradeTable.insertRow(tradeTable.rows.length);
+              var cells = lines[line].split(/\s+/);
+              cells.reverse()
+              for(var cell = 0; cell < cells.length; cell++){
+                var cell1 = row.insertCell(0);
+                cell1.innerHTML = cells[cell];
+              }
+            }
+            totalTrades += parseInt(linesLengthAdj);
+            document.getElementById('totTrades').innerHTML = "<b>Total Trades: " + totalTrades;
+          })
+      }
+
+      function getPl(yr, mo, day){
+        fetch("/trades/" + yr + "/" + mo + "/" + day + "pl.txt")
+          .then((response) => {
+              return response.text();
+              })
+         .then((text) => {
+            totalProfit += parseFloat(text);
+            document.getElementById('tPl').innerHTML = "<b>P/L: $" + totalProfit;
+          })
+      }
+
+      if (isWeekend === true){
+        if ( dayOfWeek === 6 ){
+          theseWeekdays = new Array ( dd - 1, dd - 2, dd - 3, dd - 4, dd - 5 );
+        } else if ( dayOfWeek === 0 ){
+          theseWeekdays = new Array ( dd - 2, dd - 3, dd - 4, dd - 5, dd - 6 );
+        }
+        console.log('weekend');
+        console.log(theseWeekdays);
+        var weekTotTrades = 0;
+        for (var i = 0; i < 5; i++) {
+          padDay = String(theseWeekdays[i]).padStart(2, '0');
+          getTrades(yyyy, mm, padDay);
+          getPl(yyyy, mm, padDay);
+          console.log(padDay);
+        }
+      } else{
+        console.log('weekday');
+        getTrades(yyyy, mm, dd)
+        getPl(yyyy, mm, dd)
+      }
+      //getTrades(2022, '01', '07')
+      //getPl(2022, '01', '07')
+      </script>
+    </head>
+  <body>
+    <p class="tPl" id="wkndId"></p>
+    <p class="main"><span id="tPl"></span> | <span id="totTrades"></span>
+    <table class="gridtable" id="tTable">
+    </table>
+  </body>
+</html>
