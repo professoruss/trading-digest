@@ -1,0 +1,72 @@
+input {
+  file {
+    path => "${etradelogpath}"
+    start_position => "beginning"
+  }
+}
+
+filter {
+  grok {
+    match => [
+      "message", "%{NOTSPACE:date} %{ISO8601_TIMEZONE} %{WORD:loglevel} %{JAVACLASS} p.a.e -- %{JAVACLASS} %{NOTSPACE:class} - xxxx-%{BASE16FLOAT}:xxxx-%{BASE16FLOAT}:%{NUMBER:order_id},%{WORD:status},%{DATA:ticker},%{NUMBER:count},%{WORD:order_type},%{DATESTAMP_OTHER:date_2},%{NUMBER:unkn},%{NUMBER:price}"
+    ]
+  }
+  grok {
+    match => [
+      "message", "%{NOTSPACE:date} %{ISO8601_TIMEZONE} %{WORD:loglevel} %{JAVACLASS} p.a.c -- %{JAVACLASS} %{NOTSPACE:event_type} for xxxx-%{BASE16FLOAT} %{GREEDYDATA:stuffidontneed}TdyPL=%{NUMBER:today_pl}"
+    ]
+  }
+  mutate {
+    add_field => ["actual_price", "0.0"]
+    convert => {"actual_price" => "float"}
+  }
+  if [status] == "Pending" {
+    aggregate {
+      task_id => "%{order_id}"
+      code => "map['actual_price'] = 0.0"
+      map_action => "create"
+      timeout_timestamp_field => "@timestamp"
+      timeout => 600
+      push_previous_map_as_event => true
+    }
+  }
+  mutate {
+     convert => {"actual_price" => "float"}
+  }
+  if [status] == "Live" {
+    aggregate {
+      task_id => "%{order_id}"
+      code => "if event.get('price') != '0.0'
+                map['actual_price'] = event.get('price').to_f
+              end"
+      map_action => "update"
+    }
+  }
+  if [status] == "Completed" {
+    aggregate {
+      task_id => "%{order_id}"
+      code => "event.set('actual_price', map['actual_price']).to_f"
+      map_action => "update"
+      end_of_task => true
+    }
+  }
+  else {
+  }
+}
+output {
+  if [status] == "Completed" {
+    exec {
+      command => "ssh ${sshhost} "echo %{date} %{order_type} %{ticker} %{count}@%{actual_price} %{status} >> ${htmlpath}/%{+YYYY}/%{+MM}/%{+dd}trades.txt"'
+    }
+    exec {
+      command => 'curl -X POST -H "Content-Type: application/json" -d "{\"content\": \"%{date} %{order_type} %{ticker} %{count}@%{actual_price} %{status}\"}" ${discordurl1}'
+    }
+    stdout { codec => rubydebug }
+  }
+  if [event_type] == "AccountBalanceResponse" {
+    exec {
+      command => "echo today_pl=%{today_pl} > ${localbasepath}/tmp/todaypl.txt"
+    }
+    stdout { codec => rubydebug }
+  }
+}

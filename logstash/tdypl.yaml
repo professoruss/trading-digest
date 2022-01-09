@@ -1,0 +1,50 @@
+input {
+  file {
+    path => "${etradelogpath}"
+    start_position => "beginning"
+  }
+  file {
+    path => "${localbasepath}/tmp/todaypl.txt"
+    start_position => "beginning"
+    tags => [ 'todaypl' ]
+  }
+}
+filter {
+  if "todaypl" in [tags] {
+    kv {
+      field_split => "="
+    }
+  }
+  grok {
+    match => [
+      "message", "%{NOTSPACE:date} %{ISO8601_TIMEZONE} %{WORD:loglevel} %{JAVACLASS} p.a.c -- %{JAVACLASS} %{NOTSPACE:event_type} for xxxx-%{BASE16FLOAT} %{GREEDYDATA:stuffidontneed}TdyPL=%{NUMBER:today_pl}"
+    ]
+  }
+  if [event_type] == "AccountBalanceResponse" {
+    if ![old_today_pl] {
+      mutate {
+        add_field => { "old_today_pl" => "0.0" }
+      }
+      environment {
+        add_metadata_from_env => { "old_today_pl" => "TODAY_PL" }
+      }
+    }
+    if ![actual_today_pl] {
+      mutate {
+        add_field => { "actual_today_pl" => "0.0" }
+      }
+    }
+
+    if [today_pl] != [old_today_pl] {
+      mutate {
+        update => { "actual_today_pl" => "%{today_pl}" }
+      }
+    }
+  }
+}
+output {
+  if [event_type] == "AccountBalanceResponse" {
+    exec { command => "echo old_today_pl=%{today_pl} >> ${localbasepath}/todaypl.txt" }
+    stdout { codec => rubydebug }
+  }
+}

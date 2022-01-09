@@ -1,0 +1,6 @@
+localbasepath=$(dirname "$0")
+etradelogpath="~/data/logs/client-log.txt"
+sshhost="<hostname to ssh data to>"
+htmlpath="<html path for data on remote host>"
+discordurl1="<url for discord updates>"
+slackurl1="<url for slack updates>"
