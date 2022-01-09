@@ -56,7 +56,7 @@ filter {
 output {
   if [status] == "Completed" {
     exec {
-      command => "ssh ${sshhost} "echo %{date} %{order_type} %{ticker} %{count}@%{actual_price} %{status} >> ${htmlpath}/%{+YYYY}/%{+MM}/%{+dd}trades.txt"'
+      command => "ssh ${sshhost} "echo %{date} %{order_type} %{ticker} %{count}@%{actual_price} %{status} >> ${htmlpath}/%{+YYYY}/%{+MM}/%{+YYYY}%{+MM}%{+dd}-trades.txt"'
     }
     exec {
       command => 'curl -X POST -H "Content-Type: application/json" -d "{\"content\": \"%{date} %{order_type} %{ticker} %{count}@%{actual_price} %{status}\"}" ${discordurl1}'

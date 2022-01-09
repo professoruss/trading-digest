@@ -8,7 +8,7 @@
     if [ $today_pl != $last_pl ]
     then
       echo need to update.. today $today_pl last $last_pl
-      scp ../tmp/todaypl.txt ${sshhost}:${htmlpath}/$(date +%Y)/$(date +%MM)/$(date +%DD)pl.txt
+      scp ../tmp/todaypl.txt ${sshhost}:${htmlpath}/$(date +%Y)/$(date +%m)/$(date +%Y%m%d)-pl.txt
       echo ssh $?
       curl -X POST -H "Content-Type: application/json" -d "{\"content\": \"realized p/l:\$${today_pl}\"}" ${discordurl1}
       echo discord $?
