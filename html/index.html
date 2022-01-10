@@ -72,7 +72,11 @@
               })
          .then((text) => {
             totalProfit += parseFloat(text);
-            document.getElementById('tPl').innerHTML = "<b>Realized P/L: $" + totalProfit;
+              if (isWeekend === true){
+                document.getElementById('tPl').innerHTML = "<b>Week Realized P/L: $" + totalProfit;
+              } else {
+                document.getElementById('tPl').innerHTML = "<b>Day Realized P/L: $" + totalProfit;
+              }
           })
       }
 
