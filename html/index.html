@@ -89,16 +89,28 @@
           })
       }
 
+      // figure out the weekdays this week
+      if ( dayOfWeek === 6 ){ //saturday
+        theseWeekdays = new Array ( dd - 1, dd - 2, dd - 3, dd - 4, dd - 5 );
+      } else if ( dayOfWeek === 0 ){ // sunday
+        theseWeekdays = new Array ( dd - 2, dd - 3, dd - 4, dd - 5, dd - 6 );
+      } else if ( dayOfWeek === 1 ){ // monday
+        theseWeekdays = new Array ( dd );
+      } else if ( dayOfWeek === 2 ){ // tuesday
+        theseWeekdays = new Array ( dd , dd - 1 );
+      } else if ( dayOfWeek === 3 ){ // wednesday
+        theseWeekdays = new Array ( dd , dd - 1, dd - 2 );
+      } else if ( dayOfWeek === 4 ){ // thursday
+        theseWeekdays = new Array ( dd , dd - 1, dd - 2, dd - 3 );
+      } else if ( dayOfWeek === 5 ){ // friday
+        theseWeekdays = new Array ( dd , dd - 1, dd - 2, dd - 3, dd - 4 );
+      }
+
       if (isWeekend === true){
-        if ( dayOfWeek === 6 ){
-          theseWeekdays = new Array ( dd - 1, dd - 2, dd - 3, dd - 4, dd - 5 );
-        } else if ( dayOfWeek === 0 ){
-          theseWeekdays = new Array ( dd - 2, dd - 3, dd - 4, dd - 5, dd - 6 );
-        }
         console.log('weekend');
         console.log(theseWeekdays);
         var weekTotTrades = 0;
-        for (var i = 0; i < 5; i++) {
+        for (var i = 0; i < theseWeekdays.length; i++) {
           padDay = String(theseWeekdays[i]).padStart(2, '0');
           getTrades(yyyy, mm, padDay);
           getPl(yyyy, mm, padDay);
