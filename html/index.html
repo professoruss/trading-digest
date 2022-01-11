@@ -45,8 +45,12 @@
       function getTrades(yr, mo, day){
         fetch("/trades/" + yr + "/" + mo + "/" + yr + mo + day + "-trades.txt")
           .then((response) => {
+            if (response.status === 404) {
+              document.getElementById('mktClosed').innerHTML = "Market closed today, or Russ still sleeping";
+            } else {
               return response.text();
-              })
+            }
+          } )
           .then((text) => {
             var lines = text.split('\n');
             linesLengthAdj = String(lines.length - 1)
@@ -68,8 +72,13 @@
       function getPl(yr, mo, day){
         fetch("/trades/" + yr + "/" + mo + "/" + yr + mo + day + "-pl.txt")
           .then((response) => {
+            if (response.status === 404) {
+              totalProfit = 0.0;
+              return totalProfit;
+            } else {
               return response.text();
-              })
+            }
+          })
          .then((text) => {
             totalProfit += parseFloat(text);
               if (isWeekend === true){
@@ -105,8 +114,8 @@
       </script>
     </head>
   <body>
-    <p class="tPl" id="wkndId"></p>
     <p class="main"><span id="tPl"></span> | <span id="totTrades"></span>
+    <p class="main" id="mktClosed"></p>
     <table class="gridtable" id="tTable">
     </table>
   </body>
