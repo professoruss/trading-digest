@@ -32,62 +32,12 @@
       }
     </style>
     <script>
-      var d = new Date();
-      var yyyy = d.getFullYear();//Get the year as a four digit number (yyyy)
-      var mm = String(d.getMonth() + 1).padStart(2, '0');//Get the month as a number (01-12) - Jan is 0!
-      var dd = String(d.getDate()).padStart(2, '0');//Get the day as a number and pad(01-31)
-      var dayOfWeek = d.getDay();
-      var isWeekend = (dayOfWeek === 6) || (dayOfWeek  === 0); // 6 = Saturday, 0 = Sunday
-
-      totalTrades = 0;
-      totalProfit = 0;
-
-      function getTrades(yr, mo, day){
-        fetch("/trades/" + yr + "/" + mo + "/" + yr + mo + day + "-trades.txt")
-          .then((response) => {
-            if (response.status === 404) {
-              document.getElementById('mktClosed').innerHTML = "Market closed today, or Russ still sleeping";
-            } else {
-              return response.text();
-            }
-          } )
-          .then((text) => {
-            var lines = text.split('\n');
-            linesLengthAdj = String(lines.length - 1)
-            for(var line = 0; line < linesLengthAdj; line++){
-              var tradeTable = document.getElementById('tTable');
-              var row = tradeTable.insertRow(tradeTable.rows.length);
-              var cells = lines[line].split(/\s+/);
-              cells.reverse()
-              for(var cell = 0; cell < cells.length; cell++){
-                var cell1 = row.insertCell(0);
-                cell1.innerHTML = cells[cell];
-              }
-            }
-            totalTrades += parseInt(linesLengthAdj);
-            document.getElementById('totTrades').innerHTML = "<b>Total Trades: " + totalTrades;
-          })
-      }
-
-      function getPl(yr, mo, day){
-        fetch("/trades/" + yr + "/" + mo + "/" + yr + mo + day + "-pl.txt")
-          .then((response) => {
-            if (response.status === 404) {
-              totalProfit = 0.0;
-              return totalProfit;
-            } else {
-              return response.text();
-            }
-          })
-         .then((text) => {
-            totalProfit += parseFloat(text);
-              if (isWeekend === true){
-                document.getElementById('tPl').innerHTML = "<b>Week Realized P/L: $" + totalProfit;
-              } else {
-                document.getElementById('tPl').innerHTML = "<b>Day Realized P/L: $" + totalProfit;
-              }
-          })
-      }
+      d = new Date();
+      yyyy = d.getFullYear();//Get the year as a four digit number (yyyy)
+      mm = String(d.getMonth() + 1).padStart(2, '0');//Get the month as a number (01-12) - Jan is 0!
+      dd = String(d.getDate()).padStart(2, '0');//Get the day as a number and pad(01-31)
+      dayOfWeek = d.getDay();
+      isWeekend = (dayOfWeek === 6) || (dayOfWeek  === 0); // 6 = Saturday, 0 = Sunday
 
       // figure out the weekdays this week
       if ( dayOfWeek === 6 ){ //saturday
@@ -106,6 +56,62 @@
         theseWeekdays = new Array ( dd , dd - 1, dd - 2, dd - 3, dd - 4 );
       }
 
+      dayTrades = 0;
+      weekTrades = 0;
+      totalProfit = 0;
+      dayProfit = 0;
+      weekProfit = 0;
+
+      function getTrades(yr, mo, day){
+        fetch("/trades/" + yr + "/" + mo + "/" + yr + mo + day + "-trades.txt")
+          .then((response) => {
+            if (response.status === 404) {
+              document.getElementById('mktClosed').innerHTML = "Market closed today, or Russ still sleeping";
+            } else {
+              return response.text();
+            }
+          } )
+          .then((text) => {
+            var lines = text.split('\n');
+            linesLengthAdj = String(lines.length - 1)
+            if ( day === dd || isWeekend === true){
+              for(var line = 0; line < linesLengthAdj; line++){
+                var tradeTable = document.getElementById('tTable');
+                var row = tradeTable.insertRow(tradeTable.rows.length);
+                var cells = lines[line].split(/\s+/);
+                cells.reverse()
+                for(var cell = 0; cell < cells.length; cell++){
+                  var cell1 = row.insertCell(0);
+                  cell1.innerHTML = cells[cell];
+                }
+              }
+            }
+            dayTrades = parseInt(linesLengthAdj);
+            weekTrades += parseInt(linesLengthAdj);
+            document.getElementById('dTrades').innerHTML = "<b>Total Daily Trades: " + dayTrades;
+            document.getElementById('wTrades').innerHTML = "<b>Total Weekly Trades: " + weekTrades;
+          })
+      }
+
+      function getPl(yr, mo, day){
+        fetch("/trades/" + yr + "/" + mo + "/" + yr + mo + day + "-pl.txt")
+          .then((response) => {
+            if (response.status === 404) {
+              totalProfit = 0.0;
+              return totalProfit;
+            } else {
+              return response.text();
+            }
+          })
+         .then((text) => {
+            totalProfit += parseFloat(text);
+            dayProfit = parseFloat(text);
+            weekProfit += parseFloat(text);
+            document.getElementById('dPl').innerHTML = "<b>Day Realized P/L: $" + dayProfit;
+            document.getElementById('wPl').innerHTML = "<b>Week Realized P/L: $" + weekProfit;
+          })
+      }
+
       if (isWeekend === true){
         console.log('weekend');
         console.log(theseWeekdays);
@@ -118,15 +124,20 @@
         }
       } else{
         console.log('weekday');
-        getTrades(yyyy, mm, dd)
-        getPl(yyyy, mm, dd)
+        theseWeekdays.reverse()
+        for (var i = 0; i < theseWeekdays.length; i++) {
+          padDay = String(theseWeekdays[i]).padStart(2, '0');
+          getPl(yyyy, mm, padDay)
+          getTrades(yyyy, mm, padDay)
+          dayProfit = 0.0;
+          dayTrades = 0;
+        }
       }
-      //getTrades(2022, '01', '07')
-      //getPl(2022, '01', '07')
       </script>
     </head>
   <body>
-    <p class="main"><span id="tPl"></span> | <span id="totTrades"></span>
+    <p class="main"><span id="dTrades"></span> | <span id="wTrades"></span>
+    <p class="main"><span id="dPl"></span> | <span id="wPl"></span>
     <p class="main" id="mktClosed"></p>
     <table class="gridtable" id="tTable">
     </table>
