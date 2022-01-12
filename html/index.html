@@ -75,6 +75,8 @@
             var lines = text.split('\n');
             linesLengthAdj = String(lines.length - 1)
             if ( day === dd || isWeekend === true){
+              dayTrades = parseInt(linesLengthAdj);
+              document.getElementById('dTrades').innerHTML = "<b>Total Daily Trades: " + dayTrades;
               for(var line = 0; line < linesLengthAdj; line++){
                 var tradeTable = document.getElementById('tTable');
                 var row = tradeTable.insertRow(tradeTable.rows.length);
@@ -86,9 +88,7 @@
                 }
               }
             }
-            dayTrades = parseInt(linesLengthAdj);
             weekTrades += parseInt(linesLengthAdj);
-            document.getElementById('dTrades').innerHTML = "<b>Total Daily Trades: " + dayTrades;
             document.getElementById('wTrades').innerHTML = "<b>Total Weekly Trades: " + weekTrades;
           })
       }
