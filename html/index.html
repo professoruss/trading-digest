@@ -104,10 +104,12 @@
             }
           })
          .then((text) => {
+            if ( day === dd || isWeekend === true){
+              dayProfit = parseFloat(text);
+              document.getElementById('dPl').innerHTML = "<b>Day Realized P/L: $" + dayProfit;
+            }
             totalProfit += parseFloat(text);
-            dayProfit = parseFloat(text);
             weekProfit += parseFloat(text);
-            document.getElementById('dPl').innerHTML = "<b>Day Realized P/L: $" + dayProfit;
             document.getElementById('wPl').innerHTML = "<b>Week Realized P/L: $" + weekProfit;
           })
       }
