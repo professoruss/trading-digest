@@ -66,7 +66,7 @@
         fetch("/trades/" + yr + "/" + mo + "/" + yr + mo + day + "-trades.txt")
           .then((response) => {
             if (response.status === 404) {
-              document.getElementById('mktClosed').innerHTML = "Market closed today, or Russ still sleeping";
+                    document.getElementById('mktClosed').innerHTML = "Market closed, Russ still sleeping, or hasn't found a trade yet <p><img width='40%' src='/images/moneysleep.jpg'>";
             } else {
               return response.text();
             }
