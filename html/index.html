@@ -124,6 +124,7 @@
         }
       } else{
         console.log('weekday');
+        theseWeekdays.sort()
         theseWeekdays.reverse()
         for (var i = 0; i < theseWeekdays.length; i++) {
           padDay = String(theseWeekdays[i]).padStart(2, '0');
