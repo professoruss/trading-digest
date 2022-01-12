@@ -110,6 +110,7 @@
             }
             totalProfit += parseFloat(text);
             weekProfit += parseFloat(text);
+            weekProfit.toFixed(2);
             document.getElementById('wPl').innerHTML = "<b>Week Realized P/L: $" + weekProfit;
           })
       }
