@@ -48,10 +48,11 @@
         if ( dayOfWeek === 5 ) {
           fridayDate = dd;
         } else if ( dayOfWeek === 6 ) {
-          fridayDate = dd - 1;
+          fridayDate = String(dd - 1).padStart(2, '0');
         } else if ( dayofWeek === 0 ) {
-          fridayDate = dd -2;
+          fridayDate = String(dd - 2).padStart(2, '0');
         }
+              console.log( mm + " " + dayOfWeek + " " + fridayDate );
         fetch("/trades/" + yyyy + "/" + mm + "/" + yyyy + mm + fridayDate + "-expired.txt")
           .then((response) => {
             if (response.status === 404) {
@@ -166,9 +167,9 @@
         getTrades(yyyy, mm, padDay)
         dayProfit = 0.0;
         dayTrades = 0;
-        getExpired()
 
       }
+      getExpired()
       // iterate over the week
       for(var i=day;i>1;i--) {
         tempDate.setDate(tempDate.getDate()-1);
@@ -179,6 +180,10 @@
         getTrades(yyyy, mm, padDay)
         dayProfit = 0.0;
         dayTrades = 0;
+        if (isWeekend === true) {
+          dayProfit = 0.0;
+          dayTrades = 0;
+        }
       }
       </script>
     </head>
