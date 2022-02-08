@@ -51,6 +51,14 @@
           fridayDate = String(dd - 1).padStart(2, '0');
         } else if ( dayOfWeek === 0 ) {
           fridayDate = String(dd - 2).padStart(2, '0');
+        } else if ( dayOfWeek === 1 ) {
+          fridayDate = String(dd + 4).padStart(2, '0');
+        } else if ( dayOfWeek === 2 ) {
+          fridayDate = String(dd + 3).padStart(2, '0');
+        } else if ( dayOfWeek === 3 ) {
+          fridayDate = String(dd + 2).padStart(2, '0');
+        } else if ( dayOfWeek === 4 ) {
+          fridayDate = String(dd + 1).padStart(2, '0');
         }
         fetch("/trades/" + yyyy + "/" + mm + "/" + yyyy + mm + fridayDate + "-expired.txt")
           .then((response) => {
