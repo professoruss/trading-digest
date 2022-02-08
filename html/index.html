@@ -51,59 +51,53 @@
           fridayDate = String(dd - 1).padStart(2, '0');
         } else if ( dayOfWeek === 0 ) {
           fridayDate = String(dd - 2).padStart(2, '0');
-        } else if ( dayOfWeek === 1 ) {
-          fridayDate = String(dd + 4).padStart(2, '0');
-        } else if ( dayOfWeek === 2 ) {
-          fridayDate = String(dd + 3).padStart(2, '0');
-        } else if ( dayOfWeek === 3 ) {
-          fridayDate = String(dd + 2).padStart(2, '0');
-        } else if ( dayOfWeek === 4 ) {
-          fridayDate = String(dd + 1).padStart(2, '0');
         }
-              console.log(fridayDate);
-        fetch("/trades/" + yyyy + "/" + mm + "/" + yyyy + mm + fridayDate + "-expired.txt")
-          .then((response) => {
-            if (response.status === 404) {
-                    document.getElementById('expired').innerHTML = "No Expired Options";
-            } else {
-              return response.text();
-            }
-          } )
-          .then((text) => {
-            var lines = text.split('\n');
-            linesLengthAdj = String(lines.length - 1)
-            expiredOpts = parseInt(linesLengthAdj);
-            document.getElementById('expired').innerHTML = "<b>Total Expired Options: " + expiredOpts;
-            for(var line = 0; line < linesLengthAdj; line++){
-              var tradeTable = document.getElementById('expTable');
-              var row = tradeTable.insertRow(tradeTable.rows.length);
-              var cells = lines[line].split(/\s+/);
-              cells.reverse()
-              for(var cell = 0; cell < cells.length; cell++){
-                var cell1 = row.insertCell(0);
-                cell1.innerHTML = cells[cell];
-                if ( cell === 1 ) {
-                  expval = cells[cell].split("@");
-                  for (var col=0; col < expval.length; col ++){
-                    if ( col === 0 ) {
-                      optCount = expval[col];
-                      console.log( "Option Count " + optCount );
-                    } else {
-                      optPrice = expval[col] * 100;
-                      console.log( "Option Price " + optPrice );
+        if ( dayOfWeek === 5 | isWeekend === true) {
+          console.log(fridayDate);
+          fetch("/trades/" + yyyy + "/" + mm + "/" + yyyy + mm + fridayDate + "-expired.txt")
+            .then((response) => {
+              if (response.status === 404) {
+                document.getElementById('expired').innerHTML = "No Expired Options";
+              } else {
+                return response.text();
+              }
+            } )
+            .then((text) => {
+              var lines = text.split('\n');
+              linesLengthAdj = String(lines.length - 1)
+              expiredOpts = parseInt(linesLengthAdj);
+              document.getElementById('expired').innerHTML = "<b>Total Expired Options: " + expiredOpts;
+              for(var line = 0; line < linesLengthAdj; line++){
+                var tradeTable = document.getElementById('expTable');
+                var row = tradeTable.insertRow(tradeTable.rows.length);
+                var cells = lines[line].split(/\s+/);
+                cells.reverse()
+                for(var cell = 0; cell < cells.length; cell++){
+                  var cell1 = row.insertCell(0);
+                  cell1.innerHTML = cells[cell];
+                  if ( cell === 1 ) {
+                    expval = cells[cell].split("@");
+                    for (var col=0; col < expval.length; col ++){
+                      if ( col === 0 ) {
+                        optCount = expval[col];
+                        console.log( "Option Count " + optCount );
+                      } else {
+                        optPrice = expval[col] * 100;
+                        console.log( "Option Price " + optPrice );
+                      }
+                      totalExpVal = expval[0] * expval[1] * 100;
+                      console.log( "value " + expval[0] * expval[1] * 100 );
+                      console.log( expval[col] );
                     }
-                    totalExpVal = expval[0] * expval[1] * 100;
-                    console.log( "value " + expval[0] * expval[1] * 100 );
-                    console.log( expval[col] );
+                    console.log(cells[cell]);
+                    //totalExpValue += totalExpVal;
+                    //document.getElementById('totExpVal').innerHTML = "<b>Week Expired Options Value: $" + totalExpValue;
                   }
-                  console.log(cells[cell]);
-                  //totalExpValue += totalExpVal;
-                  //document.getElementById('totExpVal').innerHTML = "<b>Week Expired Options Value: $" + totalExpValue;
                 }
               }
-            }
-          })
-      }
+            })
+          }
+        }
       function getTrades(yr, mo, day){
         fetch("/trades/" + yr + "/" + mo + "/" + yr + mo + day + "-trades.txt")
           .then((response) => {
