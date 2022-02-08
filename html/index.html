@@ -60,6 +60,7 @@
         } else if ( dayOfWeek === 4 ) {
           fridayDate = String(dd + 1).padStart(2, '0');
         }
+              console.log(fridayDate);
         fetch("/trades/" + yyyy + "/" + mm + "/" + yyyy + mm + fridayDate + "-expired.txt")
           .then((response) => {
             if (response.status === 404) {
