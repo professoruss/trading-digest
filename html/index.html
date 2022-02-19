@@ -140,12 +140,19 @@
             }
           })
          .then((text) => {
+            var pllines = text.split('\n');
+            var lastplline = pllines[pllines.length-2];
+            var lastpl = lastplline.split(/\s+/);
+            console.log(lastpl[2]);
             if ( day === dd || isWeekend === true){
-              dayProfit = parseFloat(text);
+              dayProfit = parseFloat(lastpl[2]);
+              //dayProfit = parseFloat(text);
               document.getElementById('dPl').innerHTML = "<b>Day Realized P/L: $" + dayProfit;
             }
-            totalProfit += parseFloat(text);
-            weekProfit += parseFloat(text);
+            totalProfit += parseFloat(lastpl[2]);
+            weekProfit += parseFloat(lastpl[2]);
+            //totalProfit += parseFloat(text);
+            //weekProfit += parseFloat(text);
             weekProfit.toFixed(2);
             document.getElementById('wPl').innerHTML = "<b>Week Realized P/L: $" + weekProfit;
           })
