@@ -31,6 +31,7 @@
         background-color: #ffffff;
       }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
     <script>
       d = new Date();
       yyyy = d.getFullYear();//Get the year as a four digit number (yyyy)
@@ -80,16 +81,16 @@
                     for (var col=0; col < expval.length; col ++){
                       if ( col === 0 ) {
                         optCount = expval[col];
-                        console.log( "Option Count " + optCount );
+                    //    console.log( "Option Count " + optCount );
                       } else {
                         optPrice = expval[col] * 100;
-                        console.log( "Option Price " + optPrice );
+                    //    console.log( "Option Price " + optPrice );
                       }
                       totalExpVal = expval[0] * expval[1] * 100;
-                      console.log( "value " + expval[0] * expval[1] * 100 );
-                      console.log( expval[col] );
+                    //  console.log( "value " + expval[0] * expval[1] * 100 );
+                    //  console.log( expval[col] );
                     }
-                    console.log(cells[cell]);
+                    //console.log(cells[cell]);
                     //totalExpValue += totalExpVal;
                     //document.getElementById('totExpVal').innerHTML = "<b>Week Expired Options Value: $" + totalExpValue;
                   }
@@ -143,7 +144,7 @@
             var pllines = text.split('\n');
             var lastplline = pllines[pllines.length-2];
             var lastpl = lastplline.split(/\s+/);
-            console.log(lastpl[2]);
+            //console.log(lastpl[2]);
             if ( day === dd || isWeekend === true){
               dayProfit = parseFloat(lastpl[2]);
               //dayProfit = parseFloat(text);
@@ -167,7 +168,7 @@
         var weekTotTrades = 0;
       } else {
         console.log('weekday');
-
+              // get data for chart
         // today's trades
         yyyy = tempDate.getFullYear();
         mm =  String(tempDate.getMonth() + 1).padStart(2, '0');
@@ -201,11 +202,73 @@
     <p class="main"><span id="dPl"></span> | <span id="wPl"></span>
     <p class="main"><span id="expired"></span> | <span id="totExpVal"></span>
     <p class="main" id="mktClosed"></p>
+    <canvas id="linechart" width="800" height="200"></canvas>
     <table class="gridtable" id="tTable">
       <thead><tr><td>Trades</td></tr></thead>
     </table>
     <table class="gridtable" id="expTable">
       <thead><tr><td>Expired Options</td></tr></thead>
     </table>
+    <script>
+      if (isWeekend === false){
+        drawchart();
+      }
+      async function getchartpl(){
+        const dates =[];
+        const times =[];
+        const pls =[];
+        const response = await fetch("/trades/" + yyyy + "/" + mm + "/" + yyyy + mm + dd + "-pl.txt");
+        const datapoints = await response.text();
+        const table = datapoints.split('\n');
+        table.forEach(row => {
+          const column = row.split(' ');
+          const Date = column[0];
+          dates.push(Date);
+          const Time = column[1];
+          times.push(Time);
+          const PLs = parseFloat(column[2]);
+          pls.push(PLs);
+        });
+        dates.pop();
+        times.pop();
+        pls.pop();
+        //console.log(dates);
+        //console.log(times);
+        //console.log(pls);
+              return { dates, times, pls };
+
+      }
+      async function drawchart() {
+        const datapoints = await getchartpl();
+        plchart = document.getElementById('linechart');
+        var mychart = new Chart(plchart, {
+          type: "line",
+          data: {
+                  labels: datapoints.times,
+            datasets: [{
+              label: "Daily P/L",
+              data: datapoints.pls,
+              //backgroundColor: function(context){
+              //  const chart = context.chart;
+              //  const { ctx, chartArea, scales } = chart;
+              //  if (!chartArea) {
+              //    return null;
+              //  }
+              //  return getGradient(ctx, chartArea, scales);
+              //}
+              parsing: {
+              }
+            }]
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true
+              }
+            }
+          }
+        });
+      }
+    </script>
   </body>
 </html>
