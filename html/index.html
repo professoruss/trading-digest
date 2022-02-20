@@ -31,7 +31,7 @@
         background-color: #ffffff;
       }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
       d = new Date();
       yyyy = d.getFullYear();//Get the year as a four digit number (yyyy)
@@ -232,9 +232,6 @@
         dates.pop();
         times.pop();
         pls.pop();
-        //console.log(dates);
-        //console.log(times);
-        //console.log(pls);
               return { dates, times, pls };
 
       }
@@ -246,18 +243,14 @@
           data: {
                   labels: datapoints.times,
             datasets: [{
-              label: "Daily P/L",
+              label: "P/L",
               data: datapoints.pls,
-              //backgroundColor: function(context){
-              //  const chart = context.chart;
-              //  const { ctx, chartArea, scales } = chart;
-              //  if (!chartArea) {
-              //    return null;
-              //  }
-              //  return getGradient(ctx, chartArea, scales);
-              //}
-              parsing: {
-              }
+              fill: {
+                target: 'origin',
+                below: 'rgba(255, 0, 0, 1)',
+                above: 'rgba(60, 179, 113, 1)'
+              },
+              tension: 0.2
             }]
           },
           options: {
