@@ -8,7 +8,7 @@ source botvars
     if [ $today_pl != $last_pl ]
     then
       echo need to update.. today $today_pl last $last_pl
-      ssh ${SSHHOST} "echo $(date "+%Y-%m-%d %H:%M:%S") ${today_pl} > ${HTMLPATH}/$(date +%Y)/$(date +%m)/$(date +%Y%m%d)-pl.txt"
+      ssh ${SSHHOST} "echo $(date "+%Y-%m-%d %H:%M:%S") ${today_pl} >> ${HTMLPATH}/$(date +%Y)/$(date +%m)/$(date +%Y%m%d)-pl.txt"
       echo ssh $?
       curl -X POST -H "Content-Type: application/json" -d "{\"content\": \"realized p/l:\$${today_pl}\"}" ${DISCORDURL1}
       echo discord $?
